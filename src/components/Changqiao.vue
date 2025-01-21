@@ -5,9 +5,9 @@ const props = defineProps<{ transactionAmount: number }>();
 type Fees = {
   platFee?:number; // 平台费 固定15 港币
   commissionFee?:number; // 佣金费用 (0)
-  transactionFee?:number; // 交易费 (0.005%*总交易额 + 0.5 港币)
+  transactionFee?:number; // 交易征费-港交所 (0.00565%*总交易额)
   settlementFee?:number; // 结算交收费 (0.002%*总交易额，最低 2 港币，最高 100 港币)、
-  transactionLevy?:number; // 交易征费 (0.0027%*总交易额)
+  transactionLevy?:number; // 交易征费-证监会 (0.0027%*总交易额)
   stampDuty?:number; // 印花税 (0.1%*总交易额，不足 1 港币作 1 港币计算)
   financialReportingLevy?:number; // 财匯局交易征费 (0.00015%*总交易额)
   totalFee?:number; // 汇总总费用
@@ -31,20 +31,20 @@ function calculateFees(transactionAmount: number):Fees {
   // fees.commissionFee = roundToTwo(0.0006 * transactionAmount);
   fees.commissionFee = roundToTwo(0);
 
-  // 交易费 (0.00565%*总交易额)
+  // 交易征费-港交所 (0.00565%*总交易额)
   fees.transactionFee = roundToTwo((0.0000565 * transactionAmount));
 
   // 结算交收费 (0.002%*总交易额，最低 2 港币，最高 100 港币)
   const settlementFee = 0.00002 * transactionAmount;
   fees.settlementFee = roundToTwo(Math.min(Math.max(settlementFee, 2), 100));
 
-  // 交易征费 (0.0027%*总交易额)
+  // 交易征费-证监会 (0.0027%*总交易额)
   fees.transactionLevy = roundToTwo(0.000027 * transactionAmount);
 
   // 印花税 (0.1%*总交易额，不足 1 港币作 1 港币计算)
   fees.stampDuty = roundToTwo(Math.ceil(0.001 * transactionAmount));
 
-  // 财汇局交易征费 (0.00015%*总交易额)
+  // 交易征费-会财局 (0.00015%*总交易额)
   fees.financialReportingLevy = roundToTwo(0.0000015 * transactionAmount);
 
   // 汇总总费用
@@ -78,7 +78,7 @@ watch(
 
 <template>
   <div style="text-align: left;">
-    <h3>长桥</h3>
+    <h3>Changqiao</h3>
     <table>
       <tbody>
       <tr>
@@ -96,35 +96,37 @@ watch(
         <td>{{fees.commissionFee}}</td>
         <td> 0 佣金</td>
       </tr>
-      <tr>
-        <td>交易费:</td>
-        <td>{{fees.transactionFee}}</td>
-        <td>0.00565%*总交易额</td>
-      </tr>
 
       <tr>
         <td>结算交收费:</td>
         <td>{{fees.settlementFee}}</td>
         <td>0.002%*总交易额，最低 2 港币，最高 100 港币</td>
       </tr>
+      
+      <tr>
+        <td>交易征费-港交所:</td>
+        <td>{{fees.transactionFee}}</td>
+        <td>0.00565%*总交易额</td>
+      </tr>
 
       <tr>
-        <td>交易征费:</td>
+        <td>交易征费-证监会:</td>
         <td>{{fees.transactionLevy}}</td>
         <td>0.0027%*总交易额</td>
       </tr>
-
+      
+      <tr>
+        <td>交易征费-会财局:</td>
+        <td>{{fees.financialReportingLevy}}</td>
+        <td>0.00015%*总交易额</td>
+      </tr>
+      
       <tr>
         <td>印花税:</td>
         <td>{{fees.stampDuty}}</td>
         <td>0.1%*总交易额，不足 1 港币作 1 港币计算</td>
       </tr>
 
-      <tr>
-        <td>财汇局交易征费:</td>
-        <td>{{fees.financialReportingLevy}}</td>
-        <td>0.00015%*总交易额</td>
-      </tr>
       <tr>
         <td>总费用:</td>
         <td>{{fees.totalFee}}</td>

@@ -4,10 +4,9 @@ import { ref,watch } from 'vue'
 const props = defineProps<{ transactionAmount: number }>();
 
 type Fees = {
-  commissionFee?:number; // 佣金费用 (0.05%*总交易额) 最低18港币
+  commissionFee?:number; // 佣金费用 (0.06%*总交易额)
   transactionFee?:number; // 交易征费-港交所 (0.00565%*总交易额)
   settlementFee?:number; // 结算交收费 (0.002%*总交易额，最低 2 港币，最高 100 港币)、
-
   transactionLevy?:number; // 交易征费-证监会 (0.0027%*总交易额)
   stampDuty?:number; // 印花税 (0.1%*总交易额，不足 1 港币作 1 港币计算)
   financialReportingLevy?:number; // 交易征费-会财局 (0.00015%*总交易额)
@@ -26,14 +25,11 @@ function calculateFees(transactionAmount: number):Fees {
 
   const fees:Fees = {};
 
-  // 佣金费用 (0.00%*总交易额) 最低18港币
-  fees.commissionFee = roundToTwo(0.0005 * transactionAmount);
-  if(fees.commissionFee<18){
-    fees.commissionFee = 18
-  }
+  // 佣金费用 (0.06%*总交易额)
+  fees.commissionFee = roundToTwo(0.0006 * transactionAmount);
 
-  // 交易征费-港交所 (0.00565%*总交易额 )
-  fees.transactionFee = roundToTwo((0.0000565 * transactionAmount));
+  // 交易征费-港交所 (0.00565%*总交易额)
+  fees.transactionFee = roundToTwo(0.0000565 * transactionAmount);
 
   // 结算交收费 (0.002%*总交易额，最低 2 港币，最高 100 港币)
   const settlementFee = 0.00002 * transactionAmount;
@@ -76,7 +72,7 @@ watch(
 
 <template>
   <div style="text-align: left;">
-    <h3>IBKR</h3>
+    <h3>Tiger</h3>
     
     <table>
       <tbody>
@@ -88,9 +84,9 @@ watch(
       <tr>
         <td>佣金:</td>
         <td>{{fees.commissionFee}}</td>
-        <td>0.05%*总交易额 最低18港币</td>
+        <td>0.06%*总交易额</td>
       </tr>
-
+      
       <tr>
         <td>结算交收费:</td>
         <td>{{fees.settlementFee}}</td>
@@ -114,7 +110,7 @@ watch(
         <td>{{fees.financialReportingLevy}}</td>
         <td>0.00015%*总交易额</td>
       </tr>
-            
+
       <tr>
         <td>印花税:</td>
         <td>{{fees.stampDuty}}</td>

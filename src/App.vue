@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import IB from './components/IB.vue'
+import Tiger from './components/Tiger.vue'
 import Changqiao from './components/Changqiao.vue'
+
 
 import { ref } from 'vue'
 
-const transactionAmount = ref(27080)
+const transactionAmount = ref(20000)
 
 
 </script>
 
 <template>
-  <h2>交易费用计算器</h2>
+  <h2>Transaction fee calculator</h2>
   <div>交易金额：<input type="number" v-model="transactionAmount" /></div>
   <IB :transactionAmount='transactionAmount' /> 
+  <Tiger :transactionAmount='transactionAmount' /> 
   <Changqiao :transactionAmount = "transactionAmount"></Changqiao>
 </template>
 
